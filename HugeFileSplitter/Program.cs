@@ -1,4 +1,6 @@
-﻿namespace HugeFileSplitter
+﻿using BenchmarkDotNet.Running;
+
+namespace HugeFileSplitter
 {
     internal class Program
     {
@@ -26,6 +28,8 @@
             Console.WriteLine("Dosya parçalama işlemi tamamlandı!");
 
             Console.ReadLine();
+
+            //var summary = BenchmarkRunner.Run<BenchmarkDemo>();
         }
     }
 }
