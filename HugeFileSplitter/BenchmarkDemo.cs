@@ -2,17 +2,17 @@
 
 namespace HugeFileSplitter
 {
+    [MemoryDiagnoser]
     public class BenchmarkDemo
     {
-        private string folderPath = "D:\\KecUpdate\\MilkoKec";
-
-        private int chunkSizeInBytes = 1024 * 1024; // Örnek olarak her parça 256 KB boyutunda olacak
-
         [Benchmark]
         public void ArrayCopyBenchmark()
         {
-            string largeFileName = "1682582813.upgrade";
+            string folderPath = "D:\\KecUpdate\\MilkoKec\\2.6\\00002735";
+            string largeFileName = "1689150714.upgrade";
             string filePath = Path.Combine(folderPath, largeFileName);
+            int chunkSizeInBytes = 262144;
+
             byte[] data = File.ReadAllBytes(filePath);
 
             for (int i = 0; i < data.Length; i += chunkSizeInBytes)
@@ -29,23 +29,46 @@ namespace HugeFileSplitter
         }
 
         [Benchmark]
-        public void BufferBlockCopyBenchmark()
+        public void FileStreamBenchmark()
         {
-            string largeFileName = "1682582813 - Copy.upgrade";
+            string folderPath = "D:\\KecUpdate\\MilkoKec\\2.6\\00002735";
+            string largeFileName = "1689150714.upgrade";
+            int chunkSizeInBytes = 262144;
+
             string filePath = Path.Combine(folderPath, largeFileName);
-            byte[] data = File.ReadAllBytes(filePath);
 
-            for (int i = 0; i < data.Length; i += chunkSizeInBytes)
+            int i = 0;
+            using (FileStream fs = File.OpenRead(filePath))
             {
-                int chunkSize = Math.Min(chunkSizeInBytes, data.Length - i);
-                byte[] chunk = new byte[chunkSize];
-                Buffer.BlockCopy(data, i, chunk, 0, chunkSize);
+                byte[] buffer = new byte[chunkSizeInBytes];
+                int bytesRead;
 
-                string chunkFileName = $"chunk_{i / chunkSizeInBytes}.upgrade";
-                string chunkFilePath = Path.Combine(folderPath, chunkFileName);
-
-                File.WriteAllBytes(chunkFilePath, chunk);
+                while ((bytesRead = fs.Read(buffer, 0, chunkSizeInBytes)) > 0)
+                {
+                    //Console.WriteLine($"Read {bytesRead} bytes {i}");
+                    i++;
+                }
             }
         }
+
+        //[Benchmark]
+        //public void BufferBlockCopyBenchmark()
+        //{
+        //    string largeFileName = "1682582813 - Copy.upgrade";
+        //    string filePath = Path.Combine(folderPath, largeFileName);
+        //    byte[] data = File.ReadAllBytes(filePath);
+
+        //    for (int i = 0; i < data.Length; i += chunkSizeInBytes)
+        //    {
+        //        int chunkSize = Math.Min(chunkSizeInBytes, data.Length - i);
+        //        byte[] chunk = new byte[chunkSize];
+        //        Buffer.BlockCopy(data, i, chunk, 0, chunkSize);
+
+        //        string chunkFileName = $"chunk_{i / chunkSizeInBytes}.upgrade";
+        //        string chunkFilePath = Path.Combine(folderPath, chunkFileName);
+
+        //        File.WriteAllBytes(chunkFilePath, chunk);
+        //    }
+        //}
     }
 }
