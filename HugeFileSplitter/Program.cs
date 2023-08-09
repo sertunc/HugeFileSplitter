@@ -34,7 +34,15 @@ namespace HugeFileSplitter
 
                 while ((bytesRead = fs.Read(buffer, 0, chunkSizeInBytes)) > 0)
                 {
-                    Console.WriteLine($"Read {bytesRead} bytes {i}");
+                    if (bytesRead == buffer.Length)
+                    {
+                        Console.WriteLine($"Read {bytesRead} {buffer.Length} bytes {i}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Read {bytesRead} {buffer.Take(bytesRead).ToArray().Length} bytes {i}");
+                    }
+
                     i++;
                 }
             }
