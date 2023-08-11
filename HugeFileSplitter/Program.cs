@@ -90,17 +90,41 @@ namespace HugeFileSplitter
 
             long startingPosition = 2;
             int bytesToRead = 3;
+            string filePathh = "D:\\KecUpdate\\MilkoKec\\2.6\\00002735\\file.txt";
 
-            using (FileStream fs = File.OpenRead("D:\\KecUpdate\\MilkoKec\\2.6\\00002735\\file.txt"))
+            if (File.Exists(filePathh))
             {
-                fs.Seek(startingPosition, SeekOrigin.Begin); // Konumu ayarla
+                using (FileStream fs = File.OpenRead(filePathh))
+                {
+                    if (fs.CanSeek)
+                    {
+                        if (startingPosition >= 0 && startingPosition < fs.Length)
+                        {
+                            fs.Seek(startingPosition, SeekOrigin.Begin); // Konumu ayarla
 
-                byte[] buffer = new byte[bytesToRead];
-                int bytesRead = fs.Read(buffer, 0, bytesToRead);
+                            int bytesAvailable = (int)Math.Min(bytesToRead, fs.Length - startingPosition);
 
-                char[] cArray = System.Text.Encoding.UTF8.GetString(buffer).ToCharArray();
+                            byte[] buffer = new byte[bytesAvailable];
+                            int bytesRead = fs.Read(buffer, 0, bytesAvailable);
 
-                Console.WriteLine($"Read {bytesRead} bytes from position {startingPosition}");
+                            char[] cArray = System.Text.Encoding.UTF8.GetString(buffer).ToCharArray();
+
+                            Console.WriteLine($"Read {bytesRead} bytes from position {startingPosition}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid starting position.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("File stream does not support seeking.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("File does not exist.");
             }
 
             Console.WriteLine("Dosya parçalama işlemi tamamlandı!");
